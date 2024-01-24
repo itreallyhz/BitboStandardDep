@@ -22,7 +22,6 @@ app.add_middleware(
     #allow_origins=["http://127.0.0.1:8001"],
     allow_origins=["http://127.0.0.1:8001", "https://bitbo-standard-dep-client-5c4d94cf2c83.herokuapp.com"],
     allow_credentials=True,
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
