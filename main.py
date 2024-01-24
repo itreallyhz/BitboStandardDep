@@ -4,7 +4,7 @@ from sqlalchemy import event
 
 import models
 from routes import (ResidentProfile, BarangayOfficial, Personnel, Ordinance, Configuration,
-                    User, Authentication)
+                    User, Authentication, Incident, Project, ClearancePermit)
 
 
 from config.database import engine
@@ -79,3 +79,6 @@ app.include_router(Ordinance.router)
 app.include_router(Configuration.router)
 app.include_router(User.router)
 app.include_router(Authentication.router)
+app.include_router(Incident.router)
+app.include_router(Project.router)
+app.include_router(ClearancePermit.router)
