@@ -16,7 +16,7 @@ router = APIRouter(prefix="/residentprofiles", tags=["Resident Profile"])
 
 # Get All residents
 @router.get("/get")
-async def index(db: Session = Depends(get_db)):
+async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     # Query all residents that are not marked as deleted
     residents = db.query(ResidentProfile).filter(ResidentProfile.deleted_at == None).all()
     data = []
@@ -107,7 +107,9 @@ async def index(
     page: Optional[int] = 1,
     limit: Optional[int] = 10,
     search: Optional[str] = None,
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    current_user: UserSchema = Depends(get_current_user)):
+
 
     # Calculate the offset based on the page and limit
     offset = (page - 1) * limit
@@ -302,7 +304,7 @@ async def index(db: Session = Depends(get_db), current_user: UserSchema = Depend
         raise HTTPException(status_code=404, detail="Residents not found")
 
 @router.post("/add")
-async def store(request: ResidentProfileSchema, db: Session = Depends(get_db)):
+async def store(request: ResidentProfileSchema, db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     user = db.query(User).filter(User.email == current_user.email).first()
     # Ensure user is authenticated
     if not user:
