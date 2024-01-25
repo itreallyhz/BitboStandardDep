@@ -21,7 +21,7 @@ router = APIRouter(prefix="/barangayofficials", tags=["Barangay Officials"])
 
 # Get All Barangay Officials
 @router.get("/all")
-async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
+async def index(db: Session = Depends(get_db)):
     barangay_officials = db.query(BarangayOfficial).filter(BarangayOfficial.deleted_at == None).all()
 
     data = []
@@ -62,9 +62,7 @@ async def index(
     page: Optional[int] = 1,
     limit: Optional[int] = 10,
     search: Optional[str] = None,
-    db: Session = Depends(get_db),
-    current_user: UserSchema = Depends(get_current_user)
-):
+    db: Session = Depends(get_db)):
 
     # Calculate the offset based on the page and limit
     offset = (page - 1) * limit
@@ -121,7 +119,7 @@ async def index(
 
 # Get All Deleted Barangay Officials
 @router.get("/deleted")
-async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
+async def index(db: Session = Depends(get_db)):
     barangay_officials = db.query(BarangayOfficial).filter(BarangayOfficial.deleted_at != None).all()
 
     data = []
@@ -158,7 +156,7 @@ async def index(db: Session = Depends(get_db), current_user: UserSchema = Depend
 
 # Get All Barangay Officials with Position "Barangay Captain"
 @router.get("/barangaycaptain")
-async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
+async def index(db: Session = Depends(get_db)):
     barangay_officials = db.query(BarangayOfficial).filter(
         BarangayOfficial.deleted_at == None,
         BarangayOfficial.position == "Barangay Captain"
@@ -200,7 +198,7 @@ async def index(db: Session = Depends(get_db), current_user: UserSchema = Depend
 
 # Get Specific Barangay Official
 @router.get("/{id}")
-async def show(id: UUID4, db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
+async def show(id: UUID4, db: Session = Depends(get_db)):
     barangay_official = db.query(BarangayOfficial).filter(BarangayOfficial.id == id,
                                                           BarangayOfficial.deleted_at == None).first()
 
