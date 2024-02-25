@@ -63,8 +63,7 @@ async def index(
             page: Optional[int] = 1,
             limit: Optional[int] = 10,
             search: Optional[str] = None,
-            db: Session = Depends(get_db)
-    ):
+            db: Session = Depends(get_db)):
 
         # Calculate the offset based on the page and limit
         offset = (page - 1) * limit

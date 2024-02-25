@@ -83,7 +83,8 @@ async def get_paged_ordinances(
     page: Optional[int] = 1,
     limit: Optional[int] = 10,
     search: Optional[str] = None,
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db)
+):
     # Calculate the offset based on the page and limit
     offset = (page - 1) * limit
 
@@ -308,7 +309,7 @@ async def update_ordinance(
     else:
         raise HTTPException(status_code=404, detail="Ordinance not found!")
 # Delete Ordinance
-@router.delete("/delete/{id}")
+@router.delete("/{id}")
 async def delete_ordinance(id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Retrieve the ordinance
     ordinance = db.query(Ordinance).filter(Ordinance.id == id).first()
@@ -337,4 +338,3 @@ async def delete_ordinance(id: UUID, db: Session = Depends(get_db), current_user
         return {"message": "Ordinance deleted successfully"}
     else:
         raise HTTPException(status_code=404, detail="Ordinance not found")
-

@@ -3,6 +3,7 @@ from uuid import UUID
 import uuid
 import os
 import base64
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/barangayofficials", tags=["Barangay Officials"])
 
 # Get All Barangay Officials
 @router.get("/all")
-async def index(db: Session = Depends(get_db)):
+async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     barangay_officials = db.query(BarangayOfficial).filter(BarangayOfficial.deleted_at == None).all()
 
     data = []
@@ -62,7 +63,9 @@ async def index(
     page: Optional[int] = 1,
     limit: Optional[int] = 10,
     search: Optional[str] = None,
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    current_user: UserSchema = Depends(get_current_user)
+):
 
     # Calculate the offset based on the page and limit
     offset = (page - 1) * limit
@@ -119,7 +122,7 @@ async def index(
 
 # Get All Deleted Barangay Officials
 @router.get("/deleted")
-async def index(db: Session = Depends(get_db)):
+async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     barangay_officials = db.query(BarangayOfficial).filter(BarangayOfficial.deleted_at != None).all()
 
     data = []
@@ -156,7 +159,7 @@ async def index(db: Session = Depends(get_db)):
 
 # Get All Barangay Officials with Position "Barangay Captain"
 @router.get("/barangaycaptain")
-async def index(db: Session = Depends(get_db)):
+async def index(db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     barangay_officials = db.query(BarangayOfficial).filter(
         BarangayOfficial.deleted_at == None,
         BarangayOfficial.position == "Barangay Captain"
@@ -198,7 +201,7 @@ async def index(db: Session = Depends(get_db)):
 
 # Get Specific Barangay Official
 @router.get("/{id}")
-async def show(id: UUID4, db: Session = Depends(get_db)):
+async def show(id: UUID4, db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):
     barangay_official = db.query(BarangayOfficial).filter(BarangayOfficial.id == id,
                                                           BarangayOfficial.deleted_at == None).first()
 
@@ -229,7 +232,7 @@ async def show(id: UUID4, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail=f"Information does not exist!")
 
-UPLOADS_DIR = "images/"  # Define your folder directory path here
+UPLOADS_DIR = "images/BarangayOfficials"  # Define your folder directory path here
 
 @router.post("/add")
 async def store(
@@ -300,6 +303,7 @@ async def store(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 def save_profile_photo(photo_path: UploadFile, upload_dir: str):
     # Generate a unique filename for the uploaded image
     file_extension = photo_path.filename.split(".")[-1]
@@ -327,6 +331,7 @@ async def update(id: UUID, request: BarangayOfficialSchema, db: Session = Depend
                                                           BarangayOfficial.deleted_at == None).first()
 
     if barangay_official:
+        # Update other fields
         barangay_official.first_name = request.first_name
         barangay_official.middle_name = request.middle_name
         barangay_official.last_name = request.last_name
@@ -337,7 +342,22 @@ async def update(id: UUID, request: BarangayOfficialSchema, db: Session = Depend
         barangay_official.position = request.position
         barangay_official.start_term = request.start_term
         barangay_official.end_term = request.end_term
-        barangay_official.photo_path = request.photo_path
+
+        # Handle photo update
+        if request.photo_path:
+            old_photo_path = barangay_official.photo_path
+
+            # Save the new photo
+            photo_path = save_photo(request.photo_path, UPLOADS_DIR)
+
+            # Update the photo path
+            barangay_official.photo_path = photo_path
+
+            # Delete the old photo
+            if old_photo_path and os.path.exists(old_photo_path):
+                os.remove(old_photo_path)
+
+        # Update other fields
         barangay_official.updated_at = datetime.now()
         barangay_official.updated_by = userid
 
@@ -364,6 +384,19 @@ async def update(id: UUID, request: BarangayOfficialSchema, db: Session = Depend
         }
     else:
         raise HTTPException(status_code=404, detail="Barangay Official does not exist!")
+
+def save_photo(photo_path, upload_dir):
+    # Generate a unique filename for the uploaded photo
+    file_extension = photo_path.filename.split(".")[-1]
+    filename = f"{uuid4()}.{file_extension}"
+
+    # Save the photo to the specified directory
+    save_path = os.path.join(upload_dir, filename)
+
+    with open(save_path, "wb") as photo_file:
+        photo_file.write(photo_path.file.read())
+
+    return save_path
 
 @router.delete("/{id}")
 async def delete(id: UUID, db: Session = Depends(get_db), current_user: UserSchema = Depends(get_current_user)):

@@ -186,7 +186,7 @@ async def show(id: UUID4, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail=f"Information does not exist!")
 
-UPLOADS_DIR = "images/"  # Define your folder directory path here
+UPLOADS_DIR = "images/Incidents"  # Define your folder directory path here
 
 @router.post("/add")
 async def store(

@@ -7,6 +7,7 @@ from schemas.UpdateUser import UpdateUserSchema
 from datetime import datetime
 from pydantic import UUID4
 from hash.Hashing import Hash
+import re
 #from passlib.context import CryptContext
 
 
@@ -95,6 +96,13 @@ async def delete(id: UUID4, db: Session= Depends(get_db)):
 
 @router.post("/")
 async def store(request: UserSchema, db: Session = Depends(get_db)):
+    # Password validation regex pattern
+    password_pattern = re.compile(r'^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:<>?~=\\[\];\',./])(?=.*[0-9a-z]).{8,}$')
+
+    # Check if password meets requirements
+    if not password_pattern.match(request.password):
+        raise HTTPException(status_code=400, detail="Password does not meet requirements. It should have 8 or more characters, at least 1 uppercase letter, and at least 1 special symbol.")
+
     user = db.query(User).filter(User.email == request.email).all()
 
     if user:
@@ -124,6 +132,4 @@ async def store(request: UserSchema, db: Session = Depends(get_db)):
     except Exception as e:
             db.rollback()
             raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
-
-
 

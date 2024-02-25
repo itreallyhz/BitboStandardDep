@@ -94,12 +94,13 @@ async def index(
     page: Optional[int] = 1,
     limit: Optional[int] = 10,
     search: Optional[str] = None,
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db)
+):
 
     # Calculate the offset based on the page and limit
     offset = (page - 1) * limit
 
-    # Query personnels with pagination and search
+    # Query Personnels with pagination and search
     query = db.query(Personnel).filter(Personnel.deleted_at == None)
 
     if search:
@@ -147,8 +148,6 @@ async def index(
         "limit": limit
     }
 
-
-
 # Get Specific Barangay Official
 @router.get("/{id}")
 async def show(id: UUID4, db: Session = Depends(get_db)):
@@ -180,7 +179,7 @@ async def show(id: UUID4, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail=f"Personnel does not exist!")
 
-UPLOADS_DIR = "personnel_images/"  # Define your folder directory path here
+UPLOADS_DIR = "images/Personnels"  # Define your folder directory path here
 
 @router.post("/add")
 async def store(
@@ -257,55 +256,58 @@ def save_profile_photo(photo_path: UploadFile, upload_dir: str):
         image_file.write(photo_path.file.read())
 
     return save_path
-
-
-#Update Personnel
 @router.put("/{id}")
-async def update(id: UUID, request: PersonnelSchema, db: Session = Depends(get_db),
-                 current_user: UserSchema = Depends(get_current_user)):
+async def update_personnel(id: UUID, request: PersonnelSchema, photo_path: UploadFile = File(None),
+                           db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
     user = db.query(User).filter(User.email == current_user.email).first()
     # Ensure user is authenticated
     if not user:
         raise HTTPException(status_code=404, detail="Not authenticated")
-        # Retrieve user id from the authenticated user
+
     userid = user.id
-    personnel = db.query(Personnel).filter(Personnel.id == id,
-                                                          Personnel.deleted_at == None).first()
 
-    if personnel:
-        personnel.first_name = request.first_name
-        personnel.middle_name = request.middle_name
-        personnel.last_name = request.last_name
-        personnel.suffix = request.suffix
-        personnel.birthday = request.birthday
-        personnel.email = request.email
-        personnel.contact_no = request.contact_no
-        personnel.position = request.position
-        personnel.photo_path = request.photo_path
-        personnel.updated_at = datetime.now()
-        personnel.updated_by = userid
+    personnel = db.query(Personnel).filter(Personnel.id == id, Personnel.deleted_at == None).first()
 
-        db.commit()
+    if not personnel:
+        raise HTTPException(status_code=404, detail="Personnel does not exist!")
 
-        return {
-            "message": f"Barangay Official: {personnel.id} updated successfully",
-            "data": {
-                "first_name": personnel.first_name,
-                "middle_name": personnel.middle_name,
-                "last_name": personnel.last_name,
-                "suffix": personnel.suffix,
-                "birthday": personnel.birthday,
-                "email": personnel.email,
-                "contact_no": personnel.contact_no,
-                "position": personnel.position,
-                "created_at": personnel.created_at,
-                "created_by": str(personnel.created_by),
-                "updated_at": personnel.updated_at,
-                "updated_by": str(personnel.updated_by)
-            }
+    # Update fields
+    personnel.first_name = request.first_name
+    personnel.middle_name = request.middle_name
+    personnel.last_name = request.last_name
+    personnel.suffix = request.suffix
+    personnel.birthday = request.birthday
+    personnel.email = request.email
+    personnel.contact_no = request.contact_no
+    personnel.position = request.position
+    personnel.updated_at = datetime.now()
+    personnel.updated_by = userid
+
+    if photo_path:
+        # Save the uploaded image file
+        profile_photo_path = save_profile_photo(photo_path, UPLOADS_DIR)
+        personnel.photo_path = profile_photo_path
+
+    db.commit()
+
+    return {
+        "message": f"Personnel with ID {id} updated successfully",
+        "data": {
+            "first_name": personnel.first_name,
+            "middle_name": personnel.middle_name,
+            "last_name": personnel.last_name,
+            "suffix": personnel.suffix,
+            "birthday": personnel.birthday,
+            "email": personnel.email,
+            "contact_no": personnel.contact_no,
+            "position": personnel.position,
+            "created_at": personnel.created_at,
+            "created_by": personnel.created_by,
+            "updated_at": personnel.updated_at,
+            "updated_by": personnel.updated_by
         }
-    else:
-        raise HTTPException(status_code=404, detail="Barangay Official does not exist!")
+    }
 
 #Delete Personnel
 @router.delete("/{id}")

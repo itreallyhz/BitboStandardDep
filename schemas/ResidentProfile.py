@@ -5,79 +5,85 @@ from datetime import datetime
 
 
 class ResidentProfileSchema(BaseModel):
-    first_name: Optional[constr(min_length=0, max_length=50)] = None
-    middle_name: Optional[constr(min_length=0, max_length=50)] = None
-    last_name: Optional[constr(min_length=0, max_length=50)] = None
-    suffix: Optional[constr(max_length=5)] = None
-    age: Optional[constr(min_length=0, max_length=50)] = None
-    birthday: Optional[constr(min_length=0, max_length=50)] = None
-    birth_order: Optional[constr(min_length=0, max_length=50)] = None
-    birthplace: Optional[constr(min_length=0, max_length=50)] = None
-    blood_type: Optional[constr(max_length=50)] = None
-    gender: Optional[constr(min_length=0, max_length=50)] = None
-    civil_status: Optional[constr(min_length=0, max_length=10)] = None
-    house_no: Optional[constr(min_length=0, max_length=50)] = None
-    street: Optional[constr(min_length=0, max_length=50)] = None
-    phone_no: Optional[constr(min_length=0, max_length=50)] = None
-    email: Optional[constr(min_length=0, max_length=50)] = None
-    occupation: Optional[constr(min_length=0, max_length=50)] = None
+    first_name: Optional[constr(min_length=0, max_length=255)] = None
+    middle_name: Optional[constr(min_length=0, max_length=255)] = None
+    last_name: Optional[constr(min_length=0, max_length=255)] = None
+    suffix: Optional[constr(min_length=0, max_length=255)] = None
+    age: Optional[constr(min_length=0, max_length=255)] = None
+    birthday: Optional[constr(min_length=0, max_length=255)] = None
+    birth_order: Optional[constr(min_length=0, max_length=255)] = None
+    birth_place: Optional[constr(min_length=0, max_length=255)] = None
+    blood_type: Optional[constr(min_length=0, max_length=255)] = None
+    sex: Optional[constr(min_length=0, max_length=255)] = None
+    civil_status: Optional[constr(min_length=0, max_length=255)] = None
+    house_no: Optional[constr(min_length=0, max_length=255)] = None
+    street: Optional[constr(min_length=0, max_length=255)] = None
+    phone_no: Optional[constr(min_length=0, max_length=255)] = None
+    email: Optional[constr(min_length=0, max_length=255)] = None
+    occupation: Optional[constr(min_length=0, max_length=255)] = None
+    # For Employed
+    educational_attainment: Optional[constr(min_length=0, max_length=255)] = None
+    emp_school: Optional[constr(min_length=0, max_length=255)] = None
+    emp_degree: Optional[constr(min_length=0, max_length=255)] = None
+    emp_company: Optional[constr(min_length=0, max_length=255)] = None
+    emp_position: Optional[constr(min_length=0, max_length=255)] = None
+    emp_salary: Optional[constr(min_length=0, max_length=255)] = None
+    years_employed: Optional[constr(min_length=0, max_length=255)] = None
+    #For Occupation:Students
+    educational_level: Optional[constr(min_length=0, max_length=255)] = None
+    #For Occupation:Students:Elem
+    elem_grade_level: Optional[constr(min_length=0, max_length=255)] = None
+    #For Occupation:Students:Highschool
+    hs_grade_level: Optional[constr(min_length=0, max_length=255)] = None
+    #For Occupation:Students:SHS
+    shs_grade_level: Optional[constr(min_length=0, max_length=255)] = None
+    shs_strand: Optional[constr(min_length=0, max_length=255)] = None
+    # For Occupation:Students:College
+    college_course: Optional[constr(min_length=0, max_length=255)] = None
+    college_year: Optional[constr(min_length=0, max_length=255)] = None
+    college_school: Optional[constr(min_length=0, max_length=255)] = None
 
-    st_school: Optional[constr(min_length=0, max_length=50)] = None
-    school_type: Optional[constr(min_length=0, max_length=50)] = None
-    st_place_of_school: Optional[constr(min_length=0, max_length=50)] = None
-    grade_level: Optional[constr(min_length=0, max_length=50)] = None
-    st_degree: Optional[constr(min_length=0, max_length=50)] = None
-    course: Optional[constr(min_length=0, max_length=50)] = None
+    ethnicity: Optional[constr(min_length=0, max_length=255)] = None
+    religion: Optional[constr(min_length=0, max_length=255)] = None
 
-    educational_attainment: Optional[constr(min_length=0, max_length=50)] = None
-    emp_school: Optional[constr(min_length=0, max_length=50)] = None
-    emp_place_of_school: Optional[constr(min_length=0, max_length=50)] = None
-    emp_degree: Optional[constr(min_length=0, max_length=50)] = None
-    company: Optional[constr(min_length=0, max_length=50)] = None
-    position: Optional[constr(min_length=0, max_length=50)] = None
-    salary: Optional[constr(min_length=0, max_length=50)] = None
-    years_employed: Optional[constr(min_length=0, max_length=50)] = None
+    is_indigenous: Optional[constr(min_length=0, max_length=255)] = None
+    indigenous_type: Optional[constr(min_length=0, max_length=255)] = None
 
-    ethnicity: Optional[constr(min_length=0, max_length=50)] = None
-    religion: Optional[constr(min_length=0, max_length=50)] = None
+    is_pwd: Optional[constr(min_length=0, max_length=255)] = None
+    pwd_id: Optional[constr(min_length=0, max_length=255)] = None
 
-    is_indigenous: Optional[constr(min_length=0, max_length=10)] = None
-    indigenous_type: Optional[constr(min_length=0, max_length=50)] = None
+    is_single_parent: Optional[constr(min_length=0, max_length=255)] = None
 
-    is_disability: Optional[constr(min_length=0, max_length=10)] = None
-    disability: Optional[constr(min_length=0, max_length=50)] = None
+    is_registered_voter: Optional[constr(min_length=0, max_length=255)] = None
+    voting_precint_no: Optional[constr(min_length=0, max_length=255)] = None
 
-    is_solo_parent: Optional[constr(min_length=0, max_length=50)] = None
+    SSS_no: Optional[constr(min_length=0, max_length=255)] = None
+    GSIS_no: Optional[constr(min_length=0, max_length=255)] = None
+    TIN_no: Optional[constr(min_length=0, max_length=255)] = None
 
-    is_registered_voter: Optional[constr(min_length=0, max_length=10)] = None
-    precint_no: Optional[constr(min_length=0, max_length=50)] = None
+    valid_id: Optional[constr(min_length=0, max_length=255)] = None
 
-    SSS_no: Optional[constr(min_length=0, max_length=50)] = None
-    GSIS_no: Optional[constr(min_length=0, max_length=50)] = None
-    TIN_no: Optional[constr(min_length=0, max_length=50)] = None
+    # Mother's Information
+    m_first_name: Optional[constr(min_length=0, max_length=255)] = None
+    m_middle_name: Optional[constr(min_length=0, max_length=255)] = None
+    m_last_name: Optional[constr(min_length=0, max_length=255)] = None
+    m_blk: Optional[constr(min_length=0, max_length=255)] = None
+    m_street: Optional[constr(min_length=0, max_length=255)] = None
+    m_birthday: Optional[constr(min_length=0, max_length=255)] = None
+    m_sex: Optional[constr(min_length=0, max_length=255)] = None
+    m_phone_no: Optional[constr(min_length=0, max_length=255)] = None
+    m_email: Optional[constr(min_length=0, max_length=255)] = None
 
-    valid_id: Optional[constr(min_length=0, max_length=10)] = None
-
-    m_first_name: Optional[constr(min_length=0, max_length=50)] = None
-    m_middle_name: Optional[constr(min_length=0, max_length=50)] = None
-    m_last_name: Optional[constr(min_length=0, max_length=50)] = None
-    m_suffix: Optional[constr(max_length=5)] = None
-    m_blk: Optional[constr(min_length=0, max_length=50)] = None
-    m_street: Optional[constr(min_length=0, max_length=50)] = None
-    m_birthday: Optional[constr(min_length=0, max_length=50)] = None
-    m_gender: Optional[constr(min_length=0, max_length=50)] = None
-    m_phone_no: Optional[constr(min_length=0, max_length=50)] = None
-    m_email: Optional[constr(min_length=0, max_length=50)] = None
-
-    f_first_name: Optional[constr(min_length=0, max_length=50)] = None
-    f_middle_name: Optional[constr(min_length=0, max_length=50)] = None
-    f_last_name: Optional[constr(min_length=0, max_length=50)] = None
-    f_suffix: Optional[constr(max_length=5)] = None
-    f_blk: Optional[constr(min_length=0, max_length=50)] = None
-    f_street: Optional[constr(min_length=0, max_length=50)] = None
-    f_birthday: Optional[constr(min_length=0, max_length=50)] = None
-    f_gender: Optional[constr(min_length=0, max_length=50)] = None
-    f_phone_no: Optional[constr(min_length=0, max_length=50)] = None
-    f_email: Optional[constr(min_length=0, max_length=50)] = None
+    # Father's Information
+    f_first_name: Optional[constr(min_length=0, max_length=255)] = None
+    f_middle_name: Optional[constr(min_length=0, max_length=255)] = None
+    f_last_name: Optional[constr(min_length=0, max_length=255)] = None
+    f_suffix: Optional[constr(min_length=0, max_length=255)] = None
+    f_blk: Optional[constr(min_length=0, max_length=255)] = None
+    f_street: Optional[constr(min_length=0, max_length=255)] = None
+    f_birthday: Optional[constr(min_length=0, max_length=255)] = None
+    f_sex: Optional[constr(min_length=0, max_length=255)] = None
+    f_phone_no: Optional[constr(min_length=0, max_length=255)] = None
+    f_email: Optional[constr(min_length=0, max_length=255)] = None
 
 

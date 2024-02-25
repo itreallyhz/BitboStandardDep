@@ -1,6 +1,4 @@
 from sqlalchemy.orm import relationship
-
-
 from config.database import Base
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -26,7 +24,5 @@ class Configuration(Base):
     updated_by = Column(UUID(as_uuid=True), nullable=True)
     deleted_at = Column(DateTime, nullable=True)
     deleted_by = Column(UUID(as_uuid=True), nullable=True)
-
-    #Relationship
 
 
