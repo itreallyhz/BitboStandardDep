@@ -18,7 +18,7 @@ origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8001"],
+    allow_origins=["http://127.0.0.1:8001", "https://bitbo-standard-dep-dd2462e5a0a8.herokuapp.com", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
