@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config.database import get_db
 from models.User import User
-from schemas.User import UserSchema
+from schemas.User import UserSchema, AddResidentSchema
 from schemas.UpdateUser import UpdateUserSchema
 from datetime import datetime
 from pydantic import UUID4
@@ -29,6 +29,7 @@ async def index(db: Session = Depends(get_db)):
                 "last_name": users.last_name,
                 "email": users.email,
                 "password": users.password,
+                "user_type": users.user_type
             })
         return {
             "message": "All users successfully fetched!",
@@ -49,7 +50,7 @@ async def show(id: UUID4, db: Session = Depends(get_db)):
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "email": user.email,
-                "password": user.password,
+                "user_type": user.user_type,
             }
         }
     else:
@@ -89,9 +90,6 @@ async def delete(id: UUID4, db: Session= Depends(get_db)):
 
     else:
         raise HTTPException(status_code=404, detail=f"Data does not exists.")
-
-
-
 #pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.post("/")
@@ -114,7 +112,7 @@ async def store(request: UserSchema, db: Session = Depends(get_db)):
             last_name=request.last_name,
             email=request.email,
             password=Hash.bcrypt(request.password),
-            user_type="Secretary"
+            user_type=request.user_type
         )
         db.add(user)
         db.commit()
@@ -124,12 +122,52 @@ async def store(request: UserSchema, db: Session = Depends(get_db)):
                     "id": user.id,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
-                    "email":user.email,
+                    "email": user.email,
                     "password": user.password,
-                    "user_type": "Secretary"
+                    "user_type": user.user_type
                 }
             }
     except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+@router.post("/addresident")
+async def store(request: AddResidentSchema, db: Session = Depends(get_db)):
+        # Password validation regex pattern
+        password_pattern = re.compile(r'^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:<>?~=\\[\];\',./])(?=.*[0-9a-z]).{8,}$')
+
+        # Check if password meets requirements
+        if not password_pattern.match(request.password):
+            raise HTTPException(status_code=400,
+                                detail="Password does not meet requirements. It should have 8 or more characters, at least 1 uppercase letter, and at least 1 special symbol.")
+
+        user = db.query(User).filter(User.email == request.email).all()
+
+        if user:
+            raise HTTPException(status_code=400, detail="User already exists!")
+
+        try:
+            user = User(
+                first_name=request.first_name,
+                last_name=request.last_name,
+                email=request.email,
+                password=Hash.bcrypt(request.password),
+                user_type="Resident"
+            )
+            db.add(user)
+            db.commit()
+            return {
+                "message": "User added successfully!",
+                "data": {
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                    "password": user.password,
+                    "user_type": "Resident"
+                }
+            }
+        except Exception as e:
             db.rollback()
             raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 

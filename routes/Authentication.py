@@ -17,6 +17,7 @@ async def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = De
     if not Hash.verify(user.password,request.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect password")
     # generate a jwt token
-    access_token = create_access_token(data={"sub": user.email})
+    usertype = user.user_type
+    access_token = create_access_token(data={"sub": user.email, "usertype": usertype})
     return {"access_token": access_token, "token_type": "bearer"}
 
