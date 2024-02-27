@@ -18,14 +18,13 @@ origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8001", "https://bitbo-standard-dep-dd2462e5a0a8.herokuapp.com", "*"],
+    allow_origins=["http://127.0.0.1:8001", "https://bitboclientdep1.onrender.com", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=600,
 )
-
 # seeding Courses data// Makes the system avoid any problems in backend
 # ----------------------------------------------------------------------------------------------------------------------
 data = {
