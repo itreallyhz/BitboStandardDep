@@ -150,7 +150,7 @@ async def show(id: UUID4, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail=f"Clearance or Permit does not exists!")
 
-UPLOADS_DIR = "clearances_permits/"  # Define your folder directory path here
+UPLOADS_DIR = "images/ClearancesPermits/"  # Define your folder directory path here
 @router.post("/add")
 async def store(
         name_of_resident: str = Form(...),
