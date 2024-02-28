@@ -10,7 +10,7 @@ from config.database import engine
 
 app = FastAPI(
     title="Bitbo Standard",
-    version="0.0.2",
+    version="0.0.3",
 )
 
 # Allow all origins during development. In production, specify your actual frontend URL.
