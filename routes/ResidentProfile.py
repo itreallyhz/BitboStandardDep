@@ -505,7 +505,7 @@ async def count_residents(db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="No residents found")
 
-@router.get("/gender-distribution")
+@router.get("/count-gender")
 async def gender_distribution(db: Session = Depends(get_db)):
     male_count = db.query(ResidentProfile).filter(ResidentProfile.deleted_at == None,
                                                   ResidentProfile.sex == 'Male').count()
