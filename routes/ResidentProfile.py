@@ -491,6 +491,38 @@ async def store(request: ResidentProfileSchema, db: Session = Depends(get_db), c
         db.rollback()
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+# Get total number of residents
+@router.get("/count-residents")
+async def count_residents(db: Session = Depends(get_db)):
+    # Query the count of residents that are not marked as deleted
+    resident_count = db.query(ResidentProfile).filter(ResidentProfile.deleted_at == None).count()
+
+    if resident_count > 0:
+        return {
+            "message": "Resident count fetched successfully",
+            "resident_count": resident_count
+        }
+    else:
+        raise HTTPException(status_code=404, detail="No residents found")
+
+@router.get("/gender-distribution")
+async def gender_distribution(db: Session = Depends(get_db)):
+    male_count = db.query(ResidentProfile).filter(ResidentProfile.deleted_at == None,
+                                                  ResidentProfile.sex == 'Male').count()
+    female_count = db.query(ResidentProfile).filter(ResidentProfile.deleted_at == None,
+                                                    ResidentProfile.sex == 'Female').count()
+
+    if male_count or female_count:
+        gender_counts = {"male": male_count, "female": female_count}
+        return {
+            "message": "Gender distribution fetched successfully",
+            "gender_counts": gender_counts
+        }
+    else:
+        raise HTTPException(status_code=404, detail="Gender distribution not found")
+
+
+
 #Get Specific Resident
 @router.get("/{id}")
 async def show(id: UUID4, db: Session = Depends(get_db)):
